@@ -7,6 +7,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.io.IOException;
 @Slf4j
 public class FirebaseConfig {
 
-    @Value("classpath:config/gratitude-journal-7545e-firebase-adminsdk-fbsvc-a77ffd00c3.json")
+    @Value("${firebase.config.file}")
     private Resource serviceAccount;
 
     @PostConstruct
@@ -34,7 +35,8 @@ public class FirebaseConfig {
         log.info("Firebase config initialized");
     }
 
-    public Firestore getFirebase(){
+    @Bean
+    public Firestore getFirebase() {
         return FirestoreClient.getFirestore();
     }
 

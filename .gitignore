@@ -89,6 +89,9 @@ fabric.properties
 !.idea/codeStyles
 !.idea/runConfigurations
 
+### FIREBASE CONFIG ###
+
+
 ### Maven ###
 target/
 pom.xml.tag
