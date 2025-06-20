@@ -90,7 +90,7 @@ fabric.properties
 !.idea/runConfigurations
 
 ### FIREBASE CONFIG ###
-
+/src/main/resources/config/*
 
 ### Maven ###
 target/
