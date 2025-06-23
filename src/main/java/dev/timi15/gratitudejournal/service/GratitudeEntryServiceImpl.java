@@ -2,6 +2,7 @@ package dev.timi15.gratitudejournal.service;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
+import dev.timi15.gratitudejournal.dto.GratitudeEntryRequestDTO;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryResponseDTO;
 import dev.timi15.gratitudejournal.entity.GratitudeEntry;
 import dev.timi15.gratitudejournal.exception.NotFoundException;
@@ -51,6 +52,11 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
         } else {
             throw new NotFoundException();
         }
+    }
+
+    @Override
+    public void createGratitudeEntry(GratitudeEntryRequestDTO gratitudeEntryRequestDTO) {
+        ApiFuture<DocumentReference> addedDocRef = FIRESTORE.collection(COLLECTION_NAME).add(INSTANCE.toEntity(gratitudeEntryRequestDTO));
     }
 
 

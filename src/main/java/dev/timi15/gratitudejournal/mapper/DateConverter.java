@@ -14,16 +14,15 @@ import java.util.Date;
 public class DateConverter {
 
     @Named("timestampToLocalDate")
-    public LocalDate convertTimestampToLocalDate(Timestamp timestamp) {
+    public static LocalDate convertTimestampToLocalDate(Timestamp timestamp) {
         return Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
     }
 
     @Named("localDateToTimestamp")
-    public Timestamp convertLocalDateToTimestamp(LocalDate localDate) {
-        LocalDateTime localDateTime = localDate.atStartOfDay();
-        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        return Timestamp.of(date);
+    public static Timestamp convertLocalDateToTimestamp(LocalDate localDate) {
+        long epochSecond = localDate.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+        return Timestamp.ofTimeSecondsAndNanos(epochSecond, 0);
     }
 }
