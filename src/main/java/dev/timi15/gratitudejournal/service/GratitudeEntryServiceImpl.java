@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 public class GratitudeEntryServiceImpl implements GratitudeEntryService {
 
     private final Firestore FIRESTORE;
-    private final GratitudeEntryMapper MAPPER = Mappers.getMapper(GratitudeEntryMapper.class);
+    private final GratitudeEntryMapper INSTANCE = Mappers.getMapper(GratitudeEntryMapper.class);
     private final String COLLECTION_NAME = "GratitudeEntry";
 
     public List<GratitudeEntryResponseDTO> getAllGratitudeEntry() throws ExecutionException, InterruptedException {
@@ -31,7 +31,7 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
         List<GratitudeEntryResponseDTO> gratitudeEntries = new ArrayList<>();
 
         document.forEach(doc -> {
-            GratitudeEntryResponseDTO gratitudeEntry = GratitudeEntryMapper.INSTANCE.toResponseDTO(doc.toObject(GratitudeEntry.class));
+            GratitudeEntryResponseDTO gratitudeEntry = INSTANCE.toResponseDTO(doc.toObject(GratitudeEntry.class));
 
             gratitudeEntries.add(gratitudeEntry);
         });
@@ -45,8 +45,8 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
 
         if (document.exists() && Objects.nonNull(document.getData())) {
             GratitudeEntry entity = document.toObject(GratitudeEntry.class);
-            GratitudeEntryResponseDTO dto = GratitudeEntryMapper.INSTANCE.toResponseDTO(entity);
-            dto.setId(id); // ID-t külön be kell állítani
+            GratitudeEntryResponseDTO dto = INSTANCE.toResponseDTO(entity);
+            dto.setId(id);
             return dto;
         } else {
             throw new NotFoundException();
