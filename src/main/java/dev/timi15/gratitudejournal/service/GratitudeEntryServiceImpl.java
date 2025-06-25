@@ -8,6 +8,7 @@ import dev.timi15.gratitudejournal.entity.GratitudeEntry;
 import dev.timi15.gratitudejournal.exception.DuplicateException;
 import dev.timi15.gratitudejournal.exception.NotFoundException;
 import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapper;
+import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapperImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
