@@ -1,10 +1,12 @@
 package dev.timi15.gratitudejournal.dto;
 
 import com.google.cloud.firestore.annotation.DocumentId;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
@@ -12,7 +14,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GratitudeEntryResponseDTO {
+public class GratitudeEntryRequestDTO {
 
     @DocumentId
     private String id;
@@ -25,4 +27,5 @@ public class GratitudeEntryResponseDTO {
 
     @PastOrPresent
     private LocalDate date;
+
 }
