@@ -2,13 +2,10 @@ package dev.timi15.gratitudejournal.mapper;
 
 import com.google.cloud.Timestamp;
 import org.mapstruct.Named;
-import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 
 public class DateConverter {
 

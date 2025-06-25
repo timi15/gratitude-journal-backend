@@ -10,7 +10,6 @@ import dev.timi15.gratitudejournal.exception.NotFoundException;
 import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapper;
 import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapperImpl;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
