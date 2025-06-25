@@ -8,8 +8,8 @@ import dev.timi15.gratitudejournal.entity.GratitudeEntry;
 import dev.timi15.gratitudejournal.exception.DuplicateException;
 import dev.timi15.gratitudejournal.exception.NotFoundException;
 import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapper;
-import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapperImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,20 +19,20 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GratitudeEntryServiceImpl implements GratitudeEntryService {
 
     private final Firestore FIRESTORE;
     private final GratitudeEntryMapper gratitudeEntryMapper;
-    private final String COLLECTION_NAME = "GratitudeEntry";
+    private static final String COLLECTION_NAME = "GratitudeEntry";
 
     public List<GratitudeEntryResponseDTO> getAllGratitudeEntry() throws ExecutionException, InterruptedException {
-        CollectionReference collectionRef = FIRESTORE.collection(COLLECTION_NAME);
-        ApiFuture<QuerySnapshot> future = collectionRef.get();
-        List<QueryDocumentSnapshot> document = future.get().getDocuments();
+        ApiFuture<QuerySnapshot> future = getCollectionReference().get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
         List<GratitudeEntryResponseDTO> gratitudeEntries = new ArrayList<>();
 
-        document.forEach(doc -> {
+        documents.forEach(doc -> {
             GratitudeEntryResponseDTO gratitudeEntry = gratitudeEntryMapper.toResponseDTO(doc.toObject(GratitudeEntry.class));
             gratitudeEntries.add(gratitudeEntry);
         });
@@ -41,23 +41,23 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
     }
 
     public GratitudeEntryResponseDTO getGratitudeEntryById(String id) throws ExecutionException, InterruptedException {
-        ApiFuture<DocumentSnapshot> future = FIRESTORE.collection(COLLECTION_NAME).document(id).get();
-        DocumentSnapshot document = future.get();
+        DocumentReference docRef = getCollectionReference().document(id);
+        DocumentSnapshot document = docRef.get().get();
 
-        if (document.exists() && Objects.nonNull(document.getData())) {
+        if (!document.exists() && Objects.isNull(document.getData())) {
+            throw new NotFoundException();
+        } else {
             GratitudeEntry entity = document.toObject(GratitudeEntry.class);
             GratitudeEntryResponseDTO dto = gratitudeEntryMapper.toResponseDTO(entity);
             dto.setId(id);
             return dto;
-        } else {
-            throw new NotFoundException();
         }
     }
 
     @Override
     public void createGratitudeEntry(GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
         if (null != gratitudeEntryRequestDTO.getId()) {
-            DocumentReference docRef = FIRESTORE.collection(COLLECTION_NAME).document(gratitudeEntryRequestDTO.getId());
+            DocumentReference docRef = getCollectionReference().document(gratitudeEntryRequestDTO.getId());
             DocumentSnapshot document = docRef.get().get();
 
             if (document.exists()) {
@@ -65,9 +65,26 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
             }
             docRef.set(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
         } else {
-            FIRESTORE.collection(COLLECTION_NAME).add(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
+            getCollectionReference().add(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
+        }
+        log.info("Created gratitude entry [{}]", gratitudeEntryRequestDTO);
+    }
+
+    @Override
+    public void deleteGratitudeEntryById(String id) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = getCollectionReference().document(id);
+        DocumentSnapshot document = docRef.get().get();
+
+        if (!document.exists()) {
+            throw new NotFoundException();
         }
 
+        document.getReference().delete();
+        log.info("Deleted [{}] gratitude entry.", id);
+    }
+
+    private CollectionReference getCollectionReference() {
+        return FIRESTORE.collection(COLLECTION_NAME);
     }
 
 
