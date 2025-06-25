@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-@Component
 public class DateConverter {
 
     @Named("timestampToLocalDate")

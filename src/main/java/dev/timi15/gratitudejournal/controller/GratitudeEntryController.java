@@ -3,7 +3,11 @@ package dev.timi15.gratitudejournal.controller;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryRequestDTO;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryResponseDTO;
 import dev.timi15.gratitudejournal.service.GratitudeEntryServiceImpl;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +35,9 @@ public class GratitudeEntryController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> createGratitudeEntry(@RequestBody GratitudeEntryRequestDTO gratitudeEntryRequestDTO){
+    public ResponseEntity<?> createGratitudeEntry(@Valid @RequestBody GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
         gratitudeEntryServiceImpl.createGratitudeEntry(gratitudeEntryRequestDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

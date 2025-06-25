@@ -5,8 +5,10 @@ import com.google.cloud.firestore.*;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryRequestDTO;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryResponseDTO;
 import dev.timi15.gratitudejournal.entity.GratitudeEntry;
+import dev.timi15.gratitudejournal.exception.DuplicateException;
 import dev.timi15.gratitudejournal.exception.NotFoundException;
 import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapper;
+import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapperImpl;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
@@ -21,19 +23,18 @@ import java.util.concurrent.ExecutionException;
 public class GratitudeEntryServiceImpl implements GratitudeEntryService {
 
     private final Firestore FIRESTORE;
-    private final GratitudeEntryMapper INSTANCE = Mappers.getMapper(GratitudeEntryMapper.class);
+    private final GratitudeEntryMapper gratitudeEntryMapper;
     private final String COLLECTION_NAME = "GratitudeEntry";
 
     public List<GratitudeEntryResponseDTO> getAllGratitudeEntry() throws ExecutionException, InterruptedException {
-        CollectionReference gratitudeEntryRef = FIRESTORE.collection(COLLECTION_NAME);
-        ApiFuture<QuerySnapshot> future = gratitudeEntryRef.get();
+        CollectionReference collectionRef = FIRESTORE.collection(COLLECTION_NAME);
+        ApiFuture<QuerySnapshot> future = collectionRef.get();
         List<QueryDocumentSnapshot> document = future.get().getDocuments();
 
         List<GratitudeEntryResponseDTO> gratitudeEntries = new ArrayList<>();
 
         document.forEach(doc -> {
-            GratitudeEntryResponseDTO gratitudeEntry = INSTANCE.toResponseDTO(doc.toObject(GratitudeEntry.class));
-
+            GratitudeEntryResponseDTO gratitudeEntry = gratitudeEntryMapper.toResponseDTO(doc.toObject(GratitudeEntry.class));
             gratitudeEntries.add(gratitudeEntry);
         });
 
@@ -41,12 +42,12 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
     }
 
     public GratitudeEntryResponseDTO getGratitudeEntryById(String id) throws ExecutionException, InterruptedException {
-        ApiFuture<DocumentSnapshot> gratitudeEntry = FIRESTORE.collection(COLLECTION_NAME).document(id).get();
-        DocumentSnapshot document = gratitudeEntry.get();
+        ApiFuture<DocumentSnapshot> future = FIRESTORE.collection(COLLECTION_NAME).document(id).get();
+        DocumentSnapshot document = future.get();
 
         if (document.exists() && Objects.nonNull(document.getData())) {
             GratitudeEntry entity = document.toObject(GratitudeEntry.class);
-            GratitudeEntryResponseDTO dto = INSTANCE.toResponseDTO(entity);
+            GratitudeEntryResponseDTO dto = gratitudeEntryMapper.toResponseDTO(entity);
             dto.setId(id);
             return dto;
         } else {
@@ -55,8 +56,19 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
     }
 
     @Override
-    public void createGratitudeEntry(GratitudeEntryRequestDTO gratitudeEntryRequestDTO) {
-        ApiFuture<DocumentReference> addedDocRef = FIRESTORE.collection(COLLECTION_NAME).add(INSTANCE.toEntity(gratitudeEntryRequestDTO));
+    public void createGratitudeEntry(GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
+        if (null != gratitudeEntryRequestDTO.getId()) {
+            DocumentReference docRef = FIRESTORE.collection(COLLECTION_NAME).document(gratitudeEntryRequestDTO.getId());
+            DocumentSnapshot document = docRef.get().get();
+
+            if (document.exists()) {
+                throw new DuplicateException();
+            }
+            docRef.set(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
+        } else {
+            FIRESTORE.collection(COLLECTION_NAME).add(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
+        }
+
     }
 
 

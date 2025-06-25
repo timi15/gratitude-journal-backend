@@ -12,6 +12,6 @@ public interface GratitudeEntryService {
 
     GratitudeEntryResponseDTO getGratitudeEntryById(String id) throws ExecutionException, InterruptedException;
 
-    void createGratitudeEntry(GratitudeEntryRequestDTO gratitudeEntryRequestDTO);
+    void createGratitudeEntry(GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException;
 
 }
