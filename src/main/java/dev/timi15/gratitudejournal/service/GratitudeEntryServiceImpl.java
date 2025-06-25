@@ -41,8 +41,8 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
     }
 
     public GratitudeEntryResponseDTO getGratitudeEntryById(String id) throws ExecutionException, InterruptedException {
-        ApiFuture<DocumentSnapshot> future = FIRESTORE.collection(COLLECTION_NAME).document(id).get();
-        DocumentSnapshot document = future.get();
+        DocumentReference docRef = FIRESTORE.collection(COLLECTION_NAME).document(id);
+        DocumentSnapshot document = docRef.get().get();
 
         if (document.exists() && Objects.nonNull(document.getData())) {
             GratitudeEntry entity = document.toObject(GratitudeEntry.class);
@@ -68,6 +68,13 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
             FIRESTORE.collection(COLLECTION_NAME).add(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
         }
 
+    }
+
+    @Override
+    public void deleteGratitudeEntryById(String id) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = FIRESTORE.collection(COLLECTION_NAME).document(id);
+        DocumentSnapshot document = docRef.get().get();
+        document.getReference().delete();
     }
 
 
