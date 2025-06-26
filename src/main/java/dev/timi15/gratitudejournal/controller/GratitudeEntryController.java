@@ -41,6 +41,12 @@ public class GratitudeEntryController {
     @DeleteMapping("/gratitude/{id}")
     public ResponseEntity<?> deleteGratitudeEntry(@PathVariable String id) throws ExecutionException, InterruptedException {
         gratitudeEntryService.deleteGratitudeEntryById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PutMapping("/gratitude/{id}")
+    public ResponseEntity<?> modifyGratitudeEntry(@PathVariable String id, @Valid @RequestBody GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
+        gratitudeEntryService.modifyGratitudeEntryById(id, gratitudeEntryRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

@@ -22,7 +22,7 @@ public class FirebaseConfig {
     private Resource serviceAccount;
 
     @PostConstruct
-    public void initializaFirebase() throws IOException {
+    public void initializeFirebase() throws IOException {
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream()))

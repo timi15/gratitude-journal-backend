@@ -1,6 +1,5 @@
 package dev.timi15.gratitudejournal.dto;
 
-import com.google.cloud.firestore.annotation.DocumentId;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
@@ -15,12 +14,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GratitudeEntryRequestDTO {
-
-    @DocumentId
-    private String id;
-
-    @NotNull
-    private Long userId;
 
     @NotNull
     private String content;

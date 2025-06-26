@@ -5,7 +5,6 @@ import com.google.cloud.firestore.*;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryRequestDTO;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryResponseDTO;
 import dev.timi15.gratitudejournal.entity.GratitudeEntry;
-import dev.timi15.gratitudejournal.exception.DuplicateException;
 import dev.timi15.gratitudejournal.exception.NotFoundException;
 import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapper;
 import lombok.RequiredArgsConstructor;
@@ -56,17 +55,8 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
 
     @Override
     public void createGratitudeEntry(GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
-        if (null != gratitudeEntryRequestDTO.getId()) {
-            DocumentReference docRef = getCollectionReference().document(gratitudeEntryRequestDTO.getId());
-            DocumentSnapshot document = docRef.get().get();
+        getCollectionReference().add(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
 
-            if (document.exists()) {
-                throw new DuplicateException();
-            }
-            docRef.set(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
-        } else {
-            getCollectionReference().add(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
-        }
         log.info("Created gratitude entry [{}]", gratitudeEntryRequestDTO);
     }
 
@@ -83,9 +73,23 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
         log.info("Deleted [{}] gratitude entry.", id);
     }
 
+    @Override
+    public void modifyGratitudeEntryById(String id, GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = getCollectionReference().document(id);
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+
+        if (!document.exists()) {
+            throw new NotFoundException();
+        }
+
+        GratitudeEntry gratitudeEntry = gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO);
+        docRef.update("content", gratitudeEntry.getContent());
+        docRef.update("date", gratitudeEntry.getDate());
+    }
+
     private CollectionReference getCollectionReference() {
         return FIRESTORE.collection(COLLECTION_NAME);
     }
-
 
 }

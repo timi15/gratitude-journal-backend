@@ -16,4 +16,6 @@ public interface GratitudeEntryService {
 
     void deleteGratitudeEntryById(String id) throws ExecutionException, InterruptedException;
 
+    void modifyGratitudeEntryById(String id, GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException;
+
 }
