@@ -18,6 +18,7 @@ public class GratitudeEntryRequestDTO {
     @NotNull
     private String content;
 
+    @NotNull
     @PastOrPresent
     private LocalDate date;
 

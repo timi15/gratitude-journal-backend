@@ -1,7 +1,6 @@
 package dev.timi15.gratitudejournal.dto;
 
 import com.google.cloud.firestore.annotation.DocumentId;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.*;
@@ -23,6 +22,7 @@ public class GratitudeEntryResponseDTO {
     @NotNull
     private String content;
 
+    @NotNull
     @PastOrPresent
     private LocalDate date;
 }
