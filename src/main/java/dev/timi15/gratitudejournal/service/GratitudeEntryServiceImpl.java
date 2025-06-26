@@ -86,6 +86,8 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
         GratitudeEntry gratitudeEntry = gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO);
         docRef.update("content", gratitudeEntry.getContent());
         docRef.update("date", gratitudeEntry.getDate());
+
+        log.info("Modified [{}] gratitude entry [{}]", id, gratitudeEntryRequestDTO);
     }
 
     private CollectionReference getCollectionReference() {
