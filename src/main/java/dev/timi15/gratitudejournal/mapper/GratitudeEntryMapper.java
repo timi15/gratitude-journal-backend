@@ -14,6 +14,8 @@ public interface GratitudeEntryMapper {
     GratitudeEntryResponseDTO toResponseDTO(GratitudeEntry gratitudeEntry);
 
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "userId", ignore = true)
     @Mapping(target = "date", source = "gratitudeEntry.date", qualifiedByName = "localDateToTimestamp")
     GratitudeEntry toEntity(GratitudeEntryRequestDTO gratitudeEntry);
 
