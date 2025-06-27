@@ -2,18 +2,18 @@ package dev.timi15.gratitudejournal.service;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import dev.timi15.gratitudejournal.dto.GratitudeEntryRequestDTO;
+import dev.timi15.gratitudejournal.dto.CreateGratitudeEntryRequestDTO;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryResponseDTO;
+import dev.timi15.gratitudejournal.dto.ModifyGratitudeEntryRequestDTO;
 import dev.timi15.gratitudejournal.entity.GratitudeEntry;
+import dev.timi15.gratitudejournal.exception.NoChangesDetectedException;
 import dev.timi15.gratitudejournal.exception.NotFoundException;
 import dev.timi15.gratitudejournal.mapper.GratitudeEntryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -24,6 +24,7 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
     private final Firestore FIRESTORE;
     private final GratitudeEntryMapper gratitudeEntryMapper;
     private static final String COLLECTION_NAME = "GratitudeEntry";
+    private static final Long TEST_USER_ID = 1L;
 
     public List<GratitudeEntryResponseDTO> getAllGratitudeEntry() throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> future = getCollectionReference().get();
@@ -54,10 +55,15 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
     }
 
     @Override
-    public void createGratitudeEntry(GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
-        getCollectionReference().add(gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO));
+    public GratitudeEntryResponseDTO createGratitudeEntry(CreateGratitudeEntryRequestDTO createGratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
+        GratitudeEntry gratitudeEntry = gratitudeEntryMapper.toEntity(createGratitudeEntryRequestDTO);
+        DocumentReference docRef = getCollectionReference().add(gratitudeEntry).get();
 
-        log.info("Created gratitude entry [{}]", gratitudeEntryRequestDTO);
+        gratitudeEntry.setId(docRef.getId());
+        gratitudeEntry.setUserId(TEST_USER_ID);
+
+        log.info("Created gratitude entry [{}]", createGratitudeEntryRequestDTO);
+        return gratitudeEntryMapper.toResponseDTO(gratitudeEntry);
     }
 
     @Override
@@ -74,7 +80,7 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
     }
 
     @Override
-    public void modifyGratitudeEntryById(String id, GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
+    public GratitudeEntryResponseDTO modifyGratitudeEntryById(String id, ModifyGratitudeEntryRequestDTO modifyGratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
         DocumentReference docRef = getCollectionReference().document(id);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
@@ -83,11 +89,24 @@ public class GratitudeEntryServiceImpl implements GratitudeEntryService {
             throw new NotFoundException();
         }
 
-        GratitudeEntry gratitudeEntry = gratitudeEntryMapper.toEntity(gratitudeEntryRequestDTO);
-        docRef.update("content", gratitudeEntry.getContent());
-        docRef.update("date", gratitudeEntry.getDate());
+        GratitudeEntry gratitudeEntry = gratitudeEntryMapper.toEntity(modifyGratitudeEntryRequestDTO);
 
-        log.info("Modified [{}] gratitude entry [{}]", id, gratitudeEntryRequestDTO);
+        Map<String, Object> updates = new HashMap<>();
+
+        Optional.ofNullable(gratitudeEntry.getContent())
+                .ifPresent(content -> updates.put("content", content));
+
+        Optional.ofNullable(gratitudeEntry.getDate())
+                .ifPresent(date -> updates.put("date", date));
+
+        if (updates.isEmpty()) {
+            throw new NoChangesDetectedException();
+        }
+
+        gratitudeEntry.setId(docRef.getId());
+        docRef.update(updates);
+        log.info("Modified [{}] gratitude entry [{}]", id, modifyGratitudeEntryRequestDTO);
+        return gratitudeEntryMapper.toResponseDTO(gratitudeEntry);
     }
 
     private CollectionReference getCollectionReference() {

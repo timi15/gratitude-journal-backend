@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GratitudeEntryRequestDTO {
+public class CreateGratitudeEntryRequestDTO {
 
     @NotNull
     private String content;

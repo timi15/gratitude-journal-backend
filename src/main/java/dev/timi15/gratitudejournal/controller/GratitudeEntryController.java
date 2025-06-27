@@ -1,7 +1,8 @@
 package dev.timi15.gratitudejournal.controller;
 
-import dev.timi15.gratitudejournal.dto.GratitudeEntryRequestDTO;
+import dev.timi15.gratitudejournal.dto.CreateGratitudeEntryRequestDTO;
 import dev.timi15.gratitudejournal.dto.GratitudeEntryResponseDTO;
+import dev.timi15.gratitudejournal.dto.ModifyGratitudeEntryRequestDTO;
 import dev.timi15.gratitudejournal.service.GratitudeEntryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -58,10 +59,11 @@ public class GratitudeEntryController {
             @ApiResponse(responseCode = "400", description = "Invalid request data",
                     content = @Content(schema = @Schema()))
     })
+    @ResponseBody
     @PostMapping(path = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createGratitudeEntry(@Valid @RequestBody GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
-        gratitudeEntryService.createGratitudeEntry(gratitudeEntryRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<GratitudeEntryResponseDTO> createGratitudeEntry(@Valid @RequestBody CreateGratitudeEntryRequestDTO createGratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
+        GratitudeEntryResponseDTO gratitudeEntry = gratitudeEntryService.createGratitudeEntry(createGratitudeEntryRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(gratitudeEntry);
     }
 
 
@@ -72,10 +74,11 @@ public class GratitudeEntryController {
             @ApiResponse(responseCode = "404", description = "Gratitude entry not found",
                     content = @Content(schema = @Schema()))
     })
+    @ResponseBody
     @PutMapping(path = "/gratitude/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> modifyGratitudeEntry(@PathVariable String id, @Valid @RequestBody GratitudeEntryRequestDTO gratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
-        gratitudeEntryService.modifyGratitudeEntryById(id, gratitudeEntryRequestDTO);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<GratitudeEntryResponseDTO> modifyGratitudeEntry(@PathVariable String id, @Valid @RequestBody ModifyGratitudeEntryRequestDTO modifyGratitudeEntryRequestDTO) throws ExecutionException, InterruptedException {
+        GratitudeEntryResponseDTO gratitudeEntry = gratitudeEntryService.modifyGratitudeEntryById(id, modifyGratitudeEntryRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(gratitudeEntry);
     }
 
     @Operation(summary = "Delete a gratitude entry", description = "Delete a gratitude entry from the system using their ID")
