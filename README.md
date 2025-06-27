@@ -1,4 +1,4 @@
-# Gratitude Journal
+# Gratitude Journal [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 
 ## 📝 Overview
 
@@ -7,7 +7,7 @@ The **Gratitude Journal** is a RESTful API built with Spring Boot, designed to s
 The backend leverages Google Firebase Admin SDK with Firestore as its NoSQL database, uses MapStruct for streamlined DTO-to-entity mapping, and integrates Swagger UI for automatic API documentation.
 
 ## 🎯 Features
-- ✅ Full CRUD REST API for gratitude entries
+- ✅ CRUD REST API for gratitude entries (GET, POST, PUT, DELETE)
 - ✅ JSON request/response format
 - ✅ Persistent storage with Firestore via Firebase Admin SDK
 - ✅ Object mapping with MapStruct to simplify code and reduce boilerplate
