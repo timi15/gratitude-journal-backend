@@ -61,13 +61,6 @@ To connect this backend to your Firebase Firestore database, you need to create 
 7. Place this file into your project directory at:  
    `src/main/resources/config/serviceAccountKey.json`
 
-**Configuration**
-
-Make sure your application is configured to load the service account key from this path. For example, in `application.properties` or your environment variables, set:
-
-```properties
-firebase.config.path=src/main/resources/config/serviceAccountKey.json
-```
 ## Build & Run
 
 ### 1. Build the project
