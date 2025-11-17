@@ -1,9 +1,6 @@
 package hu.unideb.inf.gratitude_journal.configuration;
 
-import hu.unideb.inf.gratitude_journal.exception.UsernameAlreadyExistException;
-import hu.unideb.inf.gratitude_journal.exception.EmailAlreadyUsedException;
-import hu.unideb.inf.gratitude_journal.exception.ForbiddenOperationException;
-import hu.unideb.inf.gratitude_journal.exception.NotFoundException;
+import hu.unideb.inf.gratitude_journal.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -78,6 +75,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(409).body(Map.of(
                 "title", "email already in use",
+                "status", "409",
+                "message", ex.getMessage(),
+                "timestamp", System.currentTimeMillis()
+        ));
+    }
+
+    @ExceptionHandler(DateAlreadyExistException.class)
+    public ResponseEntity<Map<String, Object>> handleDateAlreadyExist(DateAlreadyExistException ex) {
+
+        return ResponseEntity.status(409).body(Map.of(
+                "title", "date already exist",
                 "status", "409",
                 "message", ex.getMessage(),
                 "timestamp", System.currentTimeMillis()

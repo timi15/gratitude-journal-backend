@@ -2,6 +2,7 @@ package hu.unideb.inf.gratitude_journal.service.impl;
 
 import hu.unideb.inf.gratitude_journal.data.entity.GratitudeEntity;
 import hu.unideb.inf.gratitude_journal.data.entity.UserEntity;
+import hu.unideb.inf.gratitude_journal.exception.DateAlreadyExistException;
 import hu.unideb.inf.gratitude_journal.exception.ForbiddenOperationException;
 import hu.unideb.inf.gratitude_journal.exception.NotFoundException;
 import hu.unideb.inf.gratitude_journal.service.dto.request.UpdateGratitudeRequestDTO;
@@ -45,6 +46,9 @@ public class GratitudeServiceImpl implements GratitudeService {
 
     @Override
     public GratitudeResponseDTO save(GratitudeRequestDTO dto) {
+        if(gratitudeRepository.existsByDate(dto.getDate())){
+            throw new DateAlreadyExistException("Gratitude post already exists with date: "+ dto.getDate());
+        }
         UserEntity currentUser = getCurrentUser();
 
         GratitudeEntity entity = gratitudeMapper.toEntity(dto);
