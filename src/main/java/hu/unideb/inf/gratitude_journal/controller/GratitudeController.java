@@ -1,9 +1,9 @@
 package hu.unideb.inf.gratitude_journal.controller;
 
+import hu.unideb.inf.gratitude_journal.service.GratitudeService;
 import hu.unideb.inf.gratitude_journal.service.dto.request.GratitudeRequestDTO;
 import hu.unideb.inf.gratitude_journal.service.dto.request.UpdateGratitudeRequestDTO;
 import hu.unideb.inf.gratitude_journal.service.dto.response.GratitudeResponseDTO;
-import hu.unideb.inf.gratitude_journal.service.impl.GratitudeServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import java.util.List;
 @Validated
 public class GratitudeController {
 
-    private final GratitudeServiceImpl gratitudeService;
+    private final GratitudeService gratitudeService;
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
