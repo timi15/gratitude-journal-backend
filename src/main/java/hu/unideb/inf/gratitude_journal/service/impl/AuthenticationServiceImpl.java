@@ -3,6 +3,7 @@ package hu.unideb.inf.gratitude_journal.service.impl;
 import hu.unideb.inf.gratitude_journal.data.entity.UserEntity;
 import hu.unideb.inf.gratitude_journal.enums.Role;
 import hu.unideb.inf.gratitude_journal.exception.EmailAlreadyUsedException;
+import hu.unideb.inf.gratitude_journal.exception.NotFoundException;
 import hu.unideb.inf.gratitude_journal.exception.UsernameAlreadyExistException;
 import hu.unideb.inf.gratitude_journal.service.mapper.UserMapper;
 import hu.unideb.inf.gratitude_journal.data.repository.UserRepository;
@@ -50,6 +51,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String login(LoginRequestDTO loginRequestDTO) {
+
+        if (!userRepository.existsByUsername(loginRequestDTO.getUsername())) {
+            throw new NotFoundException("Invalid username or password.");
+        }
+
         SecurityContext context =
                 SecurityContextHolder.createEmptyContext();
 
